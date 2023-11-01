@@ -1,3 +1,10 @@
+//Bibliotecas 
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+//Definir o endereço, carcateres[16] e quantidades de linha[2] do Display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 // Definição de portas
 int const botao = 2;
 int const led = 3;
@@ -14,22 +21,26 @@ char* mensagemMorse = (char*)malloc(tamanhoMsg * sizeof(char)); // declara-se um
 String msg = "";
 
 void setup() {
+  //Definição das ENTRADAS e SAÍDAS das portas;
   pinMode(INPUT, botao);
   pinMode(INPUT, led);
+  
+  //Inicialização do Serial e do Display LCD;
   Serial.begin(9600);
+  lcd.begin();
 }
 
-char bitPraMorse() { // converte cliques em caracteres morse
+char bitPraMorse() { // Converte cliques em caracteres morse;
 
-  if (botaoPress) { // pulsos ativos ( '.' e '-' )
+  if (botaoPress) { // pulsos ativos ( '.' e '-' );
     if (tempoPress < 500) {
       return '.';
     } else {
       return '-';
     }
-  } else { // pulsos vazios (espaço entre caracteres, paravras e fim de frase)
+  } else { // pulsos vazios (espaço entre caracteres, paravras e fim de frase);
     if (tempoPress < 500) {
-      return '@'; //Não faça nada
+      return '@'; //Não faça nada;
     } else if (tempoPress < 5000) {
       return ' '; // Espaço
     } else {
@@ -159,6 +170,6 @@ void loop() {
   } else {
     digitalWrite(3, 0);
   }
-
-
+// Mostrar alguma informação do Display
+lcd.print("O que você quiser colocar");
 }
