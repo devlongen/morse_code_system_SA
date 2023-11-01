@@ -1,0 +1,222 @@
+[
+    {
+        "id": "408b64e5f9ed136a",
+        "type": "tab",
+        "label": "banco_de_dados_SA",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "82536742bfdf602d",
+        "type": "mysql",
+        "z": "408b64e5f9ed136a",
+        "mydb": "2dbb7615410407f1",
+        "name": "",
+        "x": 940,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "733d4b84aaefec00",
+        "type": "inject",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "INSERT INTO teste_tabela (nome_testetabela,senha_testetabela) values ('teste','TESTE')",
+        "payload": "01,'INJETOR'",
+        "payloadType": "str",
+        "x": 590,
+        "y": 160,
+        "wires": [
+            [
+                "82536742bfdf602d"
+            ]
+        ]
+    },
+    {
+        "id": "6187f98f14393aa1",
+        "type": "admin",
+        "z": "408b64e5f9ed136a",
+        "name": "WA Admin",
+        "whatsappLink": "f797ee0856ce8398",
+        "x": 710,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dc9dd3bc080fc962",
+        "type": "chats-out",
+        "z": "408b64e5f9ed136a",
+        "name": "Chats Out",
+        "whatsappLink": "f797ee0856ce8398",
+        "number": "",
+        "x": 560,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "0418f2fd2353dfc2",
+        "type": "arduino in",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "pin": "2",
+        "state": "INPUT",
+        "arduino": "c2381b66c3c85619",
+        "x": 50,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5cd214091a022bcd",
+        "type": "serial in",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "serial": "2e8a395d2efeec8f",
+        "x": 330,
+        "y": 280,
+        "wires": [
+            [
+                "dc9dd3bc080fc962",
+                "cf6e43fb0a3ec6cc"
+            ]
+        ]
+    },
+    {
+        "id": "cf6e43fb0a3ec6cc",
+        "type": "change",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "INSERT INTO teste_tabela(nome_testetabela) values (msg.payload)",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 570,
+        "y": 240,
+        "wires": [
+            [
+                "82536742bfdf602d"
+            ]
+        ]
+    },
+    {
+        "id": "f3b54ab9630e6fda",
+        "type": "inject",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "TESTE",
+        "payloadType": "str",
+        "x": 270,
+        "y": 360,
+        "wires": [
+            [
+                "ab08fcdb535e1455"
+            ]
+        ]
+    },
+    {
+        "id": "ab08fcdb535e1455",
+        "type": "function",
+        "z": "408b64e5f9ed136a",
+        "name": "function 2",
+        "func": "msg.toNumber = [\"+5547988071571\", \"+5547996552738\", \"+5547992852508\"];\nmsg.payload = \"That's so easy! :D\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 500,
+        "wires": [
+            [
+                "dc9dd3bc080fc962",
+                "6187f98f14393aa1"
+            ]
+        ]
+    },
+    {
+        "id": "2dbb7615410407f1",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "teste_arduino",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "f797ee0856ce8398",
+        "type": "whatsappLink",
+        "cName": "whatsapp-web",
+        "name": "Web",
+        "clientType": "waWebClient",
+        "onlineStatus": true,
+        "loopTime": "5"
+    },
+    {
+        "id": "c2381b66c3c85619",
+        "type": "arduino-board",
+        "device": "COM16"
+    },
+    {
+        "id": "2e8a395d2efeec8f",
+        "type": "serial-port",
+        "serialport": "",
+        "serialbaud": "57600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]
