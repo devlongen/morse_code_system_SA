@@ -1,9 +1,61 @@
-String alfabeto = ""; 
-String codigoMorse = "";
-int buttonPin = 2;  // Use o pino correto para o botão
-bool isButtonPressed = false;
+// Definição de portas
+int const botao = 2;
 
-char charToMorse(String _alfabeto) {
+// Variáveis genéricas
+bool botaoPress = false; // último estado do botão (usado para detectar cliques)
+bool mandandoMsg = false; // enquanto verdairo, permite a escrita duma mensagem
+float tempoPress, comecoPress = 0;
+String codigoMorse = "";
+// Variáveis de mensagem
+int tamanhoMsg = 1;
+char* mensagemMorse = (char*)malloc(tamanhoMsg * sizeof(char)); // declara-se um pointer para uma array
+String msg = "";
+
+void setup() {
+  pinMode(INPUT, botao);
+  Serial.begin(9600);
+}
+
+char bitPraMorse() { // converte cliques em caracteres morse
+  
+  if (botaoPress) { // pulsos ativos ( '.' e '-' )
+    if (tempoPress < 500) {
+      codigoMorse += ".";
+      return '.';
+    } else {
+      codigoMorse += "-";
+      return '-';
+    }
+  } else { // pulsos vazios (espaço entre caracteres, paravras e fim de frase)
+    if (tempoPress < 500) {
+      return '@'; //Não faça nada
+    } else if (tempoPress < 5000) {
+      codigoMorse = "";
+      return ' '; // Espaço
+    } else {
+      mandandoMsg = false; 
+      comecoPress = 0;
+      return '@';
+    }
+  }
+}
+
+void addMorseEmTexto(char morseChar) { // adiciona um caractere morse numa mensagem morse (argumento é a função bitPraMorse() )
+  
+  if (morseChar != '@') {
+    tamanhoMsg++;
+    char* novaMensagemMorse = (char*)malloc(tamanhoMsg * sizeof(char));
+    char arrayMorseChar[2] = {morseChar, '\0'}; // array provisória (para adicionar um único caracter)
+    
+    strcpy(novaMensagemMorse, mensagemMorse);
+    strcat(novaMensagemMorse, arrayMorseChar);
+    mensagemMorse = novaMensagemMorse; // atualizando o pointer da nova array, não a array em si
+    free(novaMensagemMorse);
+
+    msg = String(mensagemMorse);
+  }
+}; 
+char MorseToCode(String _alfabeto) {
     if (_alfabeto == ".-") {
     return 'a';
   }
@@ -82,36 +134,23 @@ char charToMorse(String _alfabeto) {
   else if (_alfabeto == "--..") {
     return 'z';
   }
-}
-
-void setup() {
-  pinMode(buttonPin, INPUT);
-  Serial.begin(9600);
-}
+};
 
 void loop() {
-  if (digitalRead(buttonPin) && !isButtonPressed) {
-    delay(200);  // Debounce delay
-    isButtonPressed = true;
-    codigoMorse += ".";
-    Serial.println("Button Pressed test");
-  }
-  
-  if (!digitalRead(buttonPin) && isButtonPressed) {
-    delay(200);  // Debounce delay
-    isButtonPressed = false;
-    codigoMorse += "-";
-    Serial.println("Button Released test");
-  }
-  
-  // TESTE PARA VER SE O CÓDIGO DIGITA E TRADUZ ALGO
-  if (codigoMorse.length() > 0) {
-    char letra = charToMorse(codigoMorse);
-    if (letra != ' ') {
-      alfabeto += letra;
+
+  if (botaoPress != digitalRead(botao)) { // detecta mudanças do estado do botao (foi pressionado ou não)
+    if (comecoPress != 0) { // botao foi clicado ao menos uma vez antes
+      tempoPress = millis() - comecoPress;
+      addMorseEmTexto(bitPraMorse());
     }
-    codigoMorse = "";
+    else { // botao clicado pela primeira vez
+      mandandoMsg = true;
+    }
+    botaoPress = !botaoPress;
+    comecoPress = millis();
   }
-  /
-  // Outras lógicas e ações com base em "alfabeto" aqui, se necessário.
+  Serial.print(codigoMorse);
+ for(int i; codigoMorse.length > i; i++ ){
+    codigoMorse = "";
+ }
 }
