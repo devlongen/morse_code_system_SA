@@ -37,7 +37,7 @@ String bitPraMorse() { // converte cliques em caracteres morse
     } else {
       return "-";
     }
-  } else { // pulsos vazios (espaço entre caracteres, paravras e fim de frase)
+  } else { // pulsos vazios (espaço entre caracteres, palavras e fim de frase)
     if (tempoPress < 500) {
       return ""; // Espaço entre pulsos
     } else if (tempoPress < 1000) {
