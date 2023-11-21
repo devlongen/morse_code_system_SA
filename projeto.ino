@@ -9,6 +9,7 @@
 int const botao = 2;
 int const led = 3;
 int const envio = 4;
+int const portaBuzzer = 7;
 
 // Variáveis genéricas
 bool botaoPress = false;  // último estado do botão (usado para detectar cliques)
@@ -21,8 +22,9 @@ String msgMorse, mensagemTraduzida, msgTemporaria = "";
 void setup()
 {
     pinMode(INPUT, botao);
-    pinMode(INPUT, led);
+    pinMode(OUTPUT, led);
     pinMode(INPUT, envio);
+    pinMode(OUTPUT, portaBuzzer);
 
     Serial.begin(9600);
 }
@@ -93,10 +95,12 @@ String bitPraMorse() // converte cliques em caracteres morse
     { // pulsos ativos ( '.' e '-' )
         if (tempoPress < 500)
         {
+           tone(portaBuzzer, 294, 100); // Buzzer(som), sua frequência e seu tempo de duração no .
             return ".";
         }
         else
         {
+          tone(portaBuzzer, 277, 200); // Buzzer(som), sua frequência e seu tempo de duração no - 
             return "-";
         }
     }
