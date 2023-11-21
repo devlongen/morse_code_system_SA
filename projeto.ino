@@ -275,6 +275,39 @@ void morseEmLed(int portaLed, String _msgMorse)
     }
 }
 
+void morseEmBuzzer(int portaBuzzer, String _msgMorse)
+{ // converte qualquer mensagem morse em pulsos num LED
+    noTone(portaBuzzer);
+
+    while (_msgMorse != "")
+    {
+
+        String charAtual = _msgMorse.substring(0, 1);
+        _msgMorse = _msgMorse.substring(1, _msgMorse.length());
+
+        if (charAtual == ".")
+        {
+            tone(portaBuzzer, 294);
+            delay(333);
+        }
+        else if (charAtual == "-")
+        {
+            tone(portaBuzzer, 294);
+            delay(1000);
+        }
+        else if (charAtual == " ")
+        {
+            noTone(portaBuzzer);
+            delay(333);
+        }
+        else if (charAtual == "/")
+        {
+            noTone(portaBuzzer);
+            delay(1000);
+        }
+    }
+}
+
 void loop()
 {
     if (botaoPress != digitalRead(botao)) // detecta mudanças do estado do botao (foi pressionado ou não)
