@@ -1,6 +1,6 @@
 // Bibliotecas
-//#include <Wire.h>
-//#include <LiquidCrystal_I2C.h>
+// #include <Wire.h>
+// #include <LiquidCrystal_I2C.h>
 
 // Definir o endereço, carcateres[16] e quantidades de linha[2] do Display
 // LiquidCrystal_I2C lcd(0x27, 16, 2);
@@ -239,6 +239,39 @@ String traduzPalavraMorse(String palavraMorse) // traduz uma "palavra-morse" pra
     else
     {
         return "?";
+    }
+}
+
+void morseEmLed(int portaLed, String _msgMorse)
+{ // converte qualquer mensagem morse em pulsos num LED
+    digitalWrite(portaLed, 0);
+
+    while (_msgMorse != "")
+    {
+
+        String charAtual = _msgMorse.substring(0, 1);
+        _msgMorse = _msgMorse.substring(1, _msgMorse.length());
+
+        if (charAtual == ".")
+        {
+            digitalWrite(portaLed, 1);
+            delay(333);
+        }
+        else if (charAtual == "-")
+        {
+            digitalWrite(portaLed, 1);
+            delay(1000);
+        }
+        else if (charAtual == " ")
+        {
+            digitalWrite(portaLed, 0);
+            delay(333);
+        }
+        else if (charAtual == "/")
+        {
+            digitalWrite(portaLed, 0);
+            delay(1000);
+        }
     }
 }
 
