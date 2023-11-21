@@ -1,9 +1,10 @@
+
 // Bibliotecas
-// #include <Wire.h>
-// #include <LiquidCrystal_I2C.h>
+ #include <Wire.h>
+ #include <LiquidCrystal_I2C.h>
 
 // Definir o endereço, carcateres[16] e quantidades de linha[2] do Display
-// LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Definição de portas
 int const botao = 2;
@@ -25,7 +26,7 @@ void setup()
     pinMode(OUTPUT, led);
     pinMode(INPUT, envio);
     pinMode(OUTPUT, portaBuzzer);
-
+    lcd.begin(); // INICIALIZAÇÃO DO DISPLAY(LCD)
     Serial.begin(9600);
 }
 
@@ -127,7 +128,8 @@ String bitPraMorse() // converte cliques em caracteres morse
 void addMorseEmTexto(String morseChar)
 { // adiciona um caractere morse numa mensagem morse (argumento é a função bitPraMorse() )
     msgMorse += morseChar;
-    Serial.println(msgMorse);
+    Serial.println(msgMorse); // SAÍDA DE DADOS PARA O SERIAL MODE;
+    lcd.print(msgMorse); // SAÍDA DE DADOS PARA O DISPLAT LCD;
 }
 
 String traduzPalavraMorse(String palavraMorse) // traduz uma "palavra-morse" pra caractere alfanumérico
