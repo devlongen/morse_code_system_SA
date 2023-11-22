@@ -1,20 +1,19 @@
-
 // Bibliotecas
- #include <Wire.h>
- #include <LiquidCrystal_I2C.h>
+//#include <Wire.h>
+//#include <LiquidCrystal_I2C.h>
 
 // Definir o endereço, carcateres[16] e quantidades de linha[2] do Display
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+//LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // Definição de portas
-int const botao = 2;
+int const botaoMorse = 2;
 int const led = 3;
-int const envio = 4;
+int const botaoEnvio = 4;
 int const portaBuzzer = 7;
 
 // Variáveis genéricas
-bool botaoPress = false;  // último estado do botão (usado para detectar cliques)
-bool mandandoMsg = false; // enquanto verdairo, permite a escrita duma mensagem
+bool pressBotaoMorse, pressBotaoEnvio = false; // último estado do botão (usado para detectar cliques)
+bool mandandoMsg = false;                      // enquanto verdairo, permite a escrita duma mensagem
 float tempoPress, comecoPress = 0;
 
 // Variáveis de mensagem
@@ -22,11 +21,11 @@ String msgMorse, mensagemTraduzida, msgTemporaria = "";
 
 void setup()
 {
-    pinMode(INPUT, botao);
+    pinMode(INPUT, botaoMorse);
     pinMode(OUTPUT, led);
-    pinMode(INPUT, envio);
+    pinMode(INPUT, botaoEnvio);
     pinMode(OUTPUT, portaBuzzer);
-    lcd.begin(); // INICIALIZAÇÃO DO DISPLAY(LCD)
+    //lcd.begin(); // INICIALIZAÇÃO DO DISPLAY(LCD)
     Serial.begin(9600);
 }
 
@@ -90,18 +89,55 @@ String separaFraseMorse() // retorna e *retira* uma "palavra-morse" duma mensage
     }
 }
 
+void escreveMorse()
+{
+    if (pressBotaoMorse != digitalRead(botaoMorse)) // detecta mudanças do estado do botao (foi pressionado ou não)
+    {
+        if (comecoPress != 0) // botao foi clicado ao menos uma vez *antes*
+        {
+            tempoPress = millis() - comecoPress;
+            addMorseEmTexto(bitPraMorse());
+        }
+        else // botao clicado pela primeira vez
+        {
+            mandandoMsg = true;
+        }
+        pressBotaoMorse = !pressBotaoMorse;
+        comecoPress = millis();
+    }
+}
+
+void confirmaEnvio()
+{
+    if (pressBotaoEnvio != digitalRead(botaoEnvio))
+    {
+        msgTemporaria = msgMorse;
+        do
+        {
+            mensagemTraduzida += traduzPalavraMorse(separaFraseMorse());
+        } while (msgTemporaria != "");
+
+        // envio para o node aqui
+
+        morseEmLed(led, msgMorse);
+        morseEmBuzzer(portaBuzzer, msgMorse);
+
+        pressBotaoEnvio = !pressBotaoEnvio;
+    }
+}
+
 String bitPraMorse() // converte cliques em caracteres morse
 {
-    if (botaoPress)
+    if (pressBotaoMorse)
     { // pulsos ativos ( '.' e '-' )
         if (tempoPress < 500)
         {
-           tone(portaBuzzer, 294, 100); // Buzzer(som), sua frequência e seu tempo de duração no .
+            tone(portaBuzzer, 294, 100); // Buzzer(som), sua frequência e seu tempo de duração no .
             return ".";
         }
         else
         {
-          tone(portaBuzzer, 277, 200); // Buzzer(som), sua frequência e seu tempo de duração no - 
+            tone(portaBuzzer, 277, 200); // Buzzer(som), sua frequência e seu tempo de duração no -
             return "-";
         }
     }
@@ -117,19 +153,16 @@ String bitPraMorse() // converte cliques em caracteres morse
         }
         else
         {
-            // mandandoMsg = false;
-            // comecoPress = 0;
-            // msg = "";
             return "/"; // Espaço entre palavras
         }
     }
 }
 
-void addMorseEmTexto(String morseChar)
-{ // adiciona um caractere morse numa mensagem morse (argumento é a função bitPraMorse() )
+void addMorseEmTexto(String morseChar) // adiciona um caractere morse numa mensagem morse (argumento é a função bitPraMorse())
+{
     msgMorse += morseChar;
     Serial.println(msgMorse); // SAÍDA DE DADOS PARA O SERIAL MODE;
-    lcd.print(msgMorse); // SAÍDA DE DADOS PARA O DISPLAT LCD;
+    //lcd.print(msgMorse);      // SAÍDA DE DADOS PARA O DISPLAT LCD;
 }
 
 String traduzPalavraMorse(String palavraMorse) // traduz uma "palavra-morse" pra caractere alfanumérico
@@ -248,8 +281,8 @@ String traduzPalavraMorse(String palavraMorse) // traduz uma "palavra-morse" pra
     }
 }
 
-void morseEmLed(int portaLed, String _msgMorse)
-{ // converte qualquer mensagem morse em pulsos num LED
+void morseEmLed(int portaLed, String _msgMorse) // converte qualquer mensagem morse em pulsos num LED
+{
     digitalWrite(portaLed, 0);
 
     while (_msgMorse != "")
@@ -261,29 +294,32 @@ void morseEmLed(int portaLed, String _msgMorse)
         if (charAtual == ".")
         {
             digitalWrite(portaLed, 1);
-            delay(333);
+            delay(250);
         }
         else if (charAtual == "-")
         {
             digitalWrite(portaLed, 1);
-            delay(1000);
+            delay(750);
         }
         else if (charAtual == " ")
         {
             digitalWrite(portaLed, 0);
-            delay(333);
+            delay(250);
         }
         else if (charAtual == "/")
         {
             digitalWrite(portaLed, 0);
-            delay(1000);
+            delay(750);
         }
+
+        digitalWrite(portaLed, 0);
+        delay(100);
     }
 }
 
-void morseEmBuzzer(int portaBuzzer, String _msgMorse)
-{ // converte qualquer mensagem morse em pulsos num LED
-    noTone(portaBuzzer);
+void morseEmBuzzer(int _portaBuzzer, String _msgMorse) // converte qualquer mensagem morse em pulsos num LED
+{
+    noTone(_portaBuzzer);
 
     while (_msgMorse != "")
     {
@@ -293,43 +329,34 @@ void morseEmBuzzer(int portaBuzzer, String _msgMorse)
 
         if (charAtual == ".")
         {
-            tone(portaBuzzer, 294);
-            delay(333);
+            tone(_portaBuzzer, 294);
+            delay(250);
         }
         else if (charAtual == "-")
         {
-            tone(portaBuzzer, 294);
-            delay(1000);
+            tone(_portaBuzzer, 294);
+            delay(750);
         }
         else if (charAtual == " ")
         {
-            noTone(portaBuzzer);
-            delay(333);
+            noTone(_portaBuzzer);
+            delay(250);
         }
         else if (charAtual == "/")
         {
-            noTone(portaBuzzer);
-            delay(1000);
+            noTone(_portaBuzzer);
+            delay(750);
         }
+
+        noTone(_portaBuzzer);
+        delay(100);
     }
 }
 
 void loop()
 {
-    if (botaoPress != digitalRead(botao)) // detecta mudanças do estado do botao (foi pressionado ou não)
-    {
-        if (comecoPress != 0) // botao foi clicado ao menos uma vez *antes*
-        {
-            tempoPress = millis() - comecoPress;
-            addMorseEmTexto(bitPraMorse());
-        }
-        else // botao clicado pela primeira vez
-        {
-            mandandoMsg = true;
-        }
-        botaoPress = !botaoPress;
-        comecoPress = millis();
-    }
+    escreveMorse();
+    confirmaEnvio();
 
     // if (digitalRead(2)) {
     //   digitalWrite(3, 1);
@@ -343,14 +370,4 @@ void loop()
     // ao clicar num botão secundário:
     // - traduz do morse para alfanumérico
     // - envia para o node-red
-    if (digitalRead(envio))
-    {
-        msgTemporaria = msgMorse;
-        do
-        {
-            mensagemTraduzida += traduzPalavraMorse(separaFraseMorse());
-        } while (msgTemporaria != "");
-
-        // envio para o node aqui
-    }
 }
