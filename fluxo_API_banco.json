@@ -1,0 +1,21 @@
+[
+    {
+        "id": "dcb0d7f6093cd6cf",
+        "type": "template",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "INSERT INTO teste_tabela(nome_testeTabela) VALUES (mensagem_enviadoWpp)",
+        "output": "str",
+        "x": 1140,
+        "y": 100,
+        "wires": [
+            [
+                "82536742bfdf602d"
+            ]
+        ]
+    }
+]
