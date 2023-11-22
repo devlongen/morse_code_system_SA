@@ -1,0 +1,298 @@
+[
+    {
+        "id": "408b64e5f9ed136a",
+        "type": "tab",
+        "label": "banco_de_dados_SA",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "82536742bfdf602d",
+        "type": "mysql",
+        "z": "408b64e5f9ed136a",
+        "mydb": "2dbb7615410407f1",
+        "name": "",
+        "x": 1480,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "733d4b84aaefec00",
+        "type": "inject",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "QUERO ENVIAR ISSO",
+        "payloadType": "str",
+        "x": 960,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6187f98f14393aa1",
+        "type": "admin",
+        "z": "408b64e5f9ed136a",
+        "name": "WA Admin",
+        "whatsappLink": "f797ee0856ce8398",
+        "x": 1010,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dc9dd3bc080fc962",
+        "type": "chats-out",
+        "z": "408b64e5f9ed136a",
+        "name": "Chats Out",
+        "whatsappLink": "f797ee0856ce8398",
+        "number": "",
+        "x": 1180,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "5cd214091a022bcd",
+        "type": "serial in",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "serial": "2e8a395d2efeec8f",
+        "x": 570,
+        "y": 160,
+        "wires": [
+            [
+                "10c4d02c7ecb51b9",
+                "ab08fcdb535e1455"
+            ]
+        ]
+    },
+    {
+        "id": "ab08fcdb535e1455",
+        "type": "function",
+        "z": "408b64e5f9ed136a",
+        "name": "function 2",
+        "func": "var mensagem_enviadoWpp\n// criação da variáveis\nmsg.toNumber = [\"+5547988071571\", \"+5547996552738\", \"+5547992852508\"];\n// acrescentando os números que enviaram para o privado \nmsg.payload = 'bananas'\nmensagem_enviadoWpp = msg.payload;\n// liberando a saída e armazenando o valor dentro de uma variável\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 160,
+        "wires": [
+            [
+                "6187f98f14393aa1",
+                "392bad249cddb982",
+                "dcb0d7f6093cd6cf",
+                "dc9dd3bc080fc962"
+            ]
+        ]
+    },
+    {
+        "id": "88440cfb9a097d55",
+        "type": "inject",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "TESTE",
+        "payloadType": "str",
+        "x": 330,
+        "y": 720,
+        "wires": [
+            [
+                "951e6c94a539b69d"
+            ]
+        ]
+    },
+    {
+        "id": "951e6c94a539b69d",
+        "type": "chats-out",
+        "z": "408b64e5f9ed136a",
+        "name": "Chats Out",
+        "whatsappLink": "f797ee0856ce8398",
+        "number": "+5547988071571",
+        "x": 620,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "10c4d02c7ecb51b9",
+        "type": "debug",
+        "z": "408b64e5f9ed136a",
+        "name": "DEBUG DA SAÍDA DO ARDUINO",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "343f5e6f1525c2dc",
+        "type": "debug",
+        "z": "408b64e5f9ed136a",
+        "name": "DEBUG DA TROCA DE VARIÁVEL ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1500,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "392bad249cddb982",
+        "type": "debug",
+        "z": "408b64e5f9ed136a",
+        "name": "DEBUG DO FUNÇÃO",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "e886a5da42dc2619",
+        "type": "debug",
+        "z": "408b64e5f9ed136a",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1860,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "925a80f37b6251f6",
+        "type": "inject",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "ROBSON",
+        "payloadType": "str",
+        "x": 620,
+        "y": 300,
+        "wires": [
+            [
+                "ab08fcdb535e1455"
+            ]
+        ]
+    },
+    {
+        "id": "dcb0d7f6093cd6cf",
+        "type": "template",
+        "z": "408b64e5f9ed136a",
+        "name": "",
+        "field": "topic",
+        "fieldType": "msg",
+        "format": "sql",
+        "syntax": "mustache",
+        "template": "INSERT INTO teste_tabela(nome_testeTabela) VALUES (mensagem_enviadoWpp)",
+        "output": "str",
+        "x": 1140,
+        "y": 100,
+        "wires": [
+            [
+                "82536742bfdf602d"
+            ]
+        ]
+    },
+    {
+        "id": "2dbb7615410407f1",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "teste_arduino",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "f797ee0856ce8398",
+        "type": "whatsappLink",
+        "cName": "whatsapp-web",
+        "name": "Web",
+        "clientType": "waWebClient",
+        "onlineStatus": true,
+        "loopTime": "5"
+    },
+    {
+        "id": "2e8a395d2efeec8f",
+        "type": "serial-port",
+        "serialport": "COM8",
+        "serialbaud": "9600",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "\\n",
+        "bin": "false",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": "10000"
+    }
+]
