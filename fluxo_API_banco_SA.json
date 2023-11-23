@@ -64,7 +64,7 @@
         "type": "function",
         "z": "490a298afe917368",
         "name": "function_insert",
-        "func": "msg.payload = {mensagem_Tabela : msg.payload}\n// Setando valor para objeto\nmsg.topic = \"INSERT INTO teste_tabela (`mensagem_Tabela`) VALUES (:mensagem_Tabela);\"\n// Trocar o payload para topic e inserir no banco de dados\nreturn msg;",
+        "func": "msg.payload = {message_Table : msg.payload}\n// Setando valor para objeto\nmsg.topic = \"INSERT INTO arduino_table (`message_Table`,`date_time_Table`) VALUES (:message_Table , now());\"\n// Trocar o payload para topic e inserir no banco de dados\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -76,8 +76,7 @@
         "wires": [
             [
                 "0b3f48849363f4bb",
-                "b39239b8106ff026",
-                "6bbce539af7be9c1"
+                "b39239b8106ff026"
             ]
         ]
     },
@@ -206,7 +205,7 @@
         "name": "",
         "host": "127.0.0.1",
         "port": "3306",
-        "db": "teste_arduino",
+        "db": "morse_code_db",
         "tz": "",
         "charset": "UTF8"
     },
