@@ -13,7 +13,7 @@
         "z": "490a298afe917368",
         "mydb": "2dbb7615410407f1",
         "name": "banco_de_dados",
-        "x": 1210,
+        "x": 1290,
         "y": 100,
         "wires": [
             [
@@ -41,25 +41,10 @@
         "name": "Envio_mensagem",
         "whatsappLink": "f797ee0856ce8398",
         "number": "",
-        "x": 1310,
-        "y": 300,
+        "x": 1290,
+        "y": 500,
         "wires": [],
         "info": "> O arduino enviará a mensagem traduzida \r\n> para os números definidos  "
-    },
-    {
-        "id": "97c92dd69984f1f9",
-        "type": "serial in",
-        "z": "490a298afe917368",
-        "name": "serial_arduino",
-        "serial": "2e8a395d2efeec8f",
-        "x": 670,
-        "y": 100,
-        "wires": [
-            [
-                "3177e5267d515424",
-                "e0082f333aa6761c"
-            ]
-        ]
     },
     {
         "id": "e0082f333aa6761c",
@@ -72,8 +57,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1020,
-        "y": 240,
+        "x": 1120,
+        "y": 200,
         "wires": [
             [
                 "0b3f48849363f4bb",
@@ -94,8 +79,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1460,
-        "y": 60,
+        "x": 940,
+        "y": 100,
         "wires": []
     },
     {
@@ -111,7 +96,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1480,
+        "x": 1660,
         "y": 100,
         "wires": []
     },
@@ -128,8 +113,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1450,
-        "y": 140,
+        "x": 1370,
+        "y": 200,
         "wires": []
     },
     {
@@ -153,8 +138,8 @@
         "topic": "",
         "payload": "TESTADO",
         "payloadType": "str",
-        "x": 660,
-        "y": 300,
+        "x": 640,
+        "y": 700,
         "wires": [
             [
                 "e0082f333aa6761c",
@@ -173,8 +158,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1030,
-        "y": 280,
+        "x": 1010,
+        "y": 500,
         "wires": [
             [
                 "1efb7777afe7cc5d",
@@ -195,8 +180,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1490,
-        "y": 180,
+        "x": 1630,
+        "y": 500,
         "wires": []
     },
     {
@@ -207,7 +192,7 @@
         "whatsappLink": "1a3b71bd3b7869ec",
         "whatsappLiteevent": "",
         "whatsappWebevent": "message,message_revoke_me",
-        "x": 690,
+        "x": 610,
         "y": 200,
         "wires": [
             [
@@ -215,6 +200,22 @@
             ]
         ],
         "info": "> Mensagem recebida por terceiros;"
+    },
+    {
+        "id": "97c92dd69984f1f9",
+        "type": "serial in",
+        "z": "490a298afe917368",
+        "name": "serial_arduino",
+        "serial": "2e8a395d2efeec8f",
+        "x": 570,
+        "y": 100,
+        "wires": [
+            [
+                "3177e5267d515424",
+                "e0082f333aa6761c",
+                "9627b5d097859157"
+            ]
+        ]
     },
     {
         "id": "2dbb7615410407f1",
@@ -228,6 +229,15 @@
     },
     {
         "id": "f797ee0856ce8398",
+        "type": "whatsappLink",
+        "cName": "whatsapp-web",
+        "name": "Web",
+        "clientType": "waWebClient",
+        "onlineStatus": true,
+        "loopTime": "5"
+    },
+    {
+        "id": "1a3b71bd3b7869ec",
         "type": "whatsappLink",
         "cName": "whatsapp-web",
         "name": "Web",
@@ -253,14 +263,5 @@
         "out": "char",
         "addchar": "",
         "responsetimeout": "10000"
-    },
-    {
-        "id": "1a3b71bd3b7869ec",
-        "type": "whatsappLink",
-        "cName": "whatsapp-web",
-        "name": "Web",
-        "clientType": "waWebClient",
-        "onlineStatus": true,
-        "loopTime": "5"
     }
 ]
