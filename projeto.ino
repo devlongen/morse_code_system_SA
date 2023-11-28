@@ -4,15 +4,18 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2); // Definir o endereço, carcateres[16] e quantidades de linha[2] do Display
 
 //* Definição de portas
-int const botaoMorse = 2;
-int const led = 3;
-int const botaoEnvio = 4;
+int const botaoUm = 2;     // para cliques de morse e navegar para cima
+int const botaoDois = 3;   // para confirmar
+int const botaoTres = 4;   // para cancelar e voltar telas
+int const botaoQuatro = 5; // para navegar para baixo
+int const portaLed = 6;
 int const portaBuzzer = 7;
 
 //* Variáveis genéricas
-bool pressBotaoMorse, pressBotaoEnvio = false; // último estado do botão (usado para detectar cliques)
-bool mandandoMsg = false;                      // enquanto verdairo, permite a escrita duma mensagem
+bool pressBotaoUm, pressBotaoDois, pressBotaoTres, pressBotaoQuatro = false; // último estado do botão (usado para detectar cliques)
+bool mandandoMsg = false;                                                    // enquanto verdairo, permite a escrita duma mensagem
 float tempoPress, comecoPress = 0;
+int idTela, idContato, indexMenu = 0;
 
 //* Variáveis de mensagem
 String msgMorse, mensagemTraduzida, msgTemporaria = "";
@@ -25,12 +28,190 @@ int const intervaloEscutaBarra = 7 * intervaloEscutaCurto;
 
 void setup()
 {
-    pinMode(INPUT, botaoMorse);
-    pinMode(INPUT, botaoEnvio);
-    pinMode(OUTPUT, led);
+    pinMode(INPUT, botaoUm);
+    pinMode(INPUT, botaoDois);
+    pinMode(INPUT, botaoTres);
+    pinMode(INPUT, botaoQuatro);
+    pinMode(OUTPUT, portaLed);
     pinMode(OUTPUT, portaBuzzer);
     lcd.begin(); // INICIALIZAÇÃO DO DISPLAY(LCD)
     Serial.begin(9600);
+}
+
+void navegarTela()
+{
+    if (idTela == 0)
+    {
+        telaContato();
+    }
+    else if (idTela == 1)
+    {
+        telaComandos();
+    }
+    else if (idTela == 2)
+    {
+        telaEnvio();
+    }
+    else if (idTela == 3)
+    {
+        telaListaMensagem();
+    }
+    else if (idTela == 4)
+    {
+        telaSenha();
+    }
+    else if (idTela == 5)
+    {
+        telaMensagem();
+    }
+    else
+    {
+        // tela de erro
+    }
+}
+
+void telaContato() // todo falta inserir lista de contato (i.e qual o index maximo)
+{
+    if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
+    {
+        pressBotaoUm = !pressBotaoUm;
+        if (digitalRead(botaoUm) && indexMenu != 0)
+        {
+            indexMenu--;
+        }
+    }
+
+    if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
+    {
+        pressBotaoQuatro = !pressBotaoQuatro;
+        if (digitalRead(botaoQuatro))
+        {
+            indexMenu++;
+        }
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois)) // selecionar contato
+    {
+        pressBotaoDois = !pressBotaoDois;
+        if (digitalRead(botaoDois))
+        {
+            idContato = indexMenu;
+            indexMenu = 0;
+            telaComandos();
+        }
+    }
+}
+
+void telaComandos() // todo identificar qual contato foi selecionado
+{
+    if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
+    {
+        pressBotaoUm = !pressBotaoUm;
+        if (digitalRead(botaoUm) && indexMenu != 0)
+        {
+            indexMenu--;
+        }
+    }
+
+    if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
+    {
+        pressBotaoQuatro = !pressBotaoQuatro;
+        if (digitalRead(botaoQuatro))
+        {
+            indexMenu++;
+        }
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois)) // selecionar contato
+    {
+        pressBotaoDois = !pressBotaoDois;
+        if (digitalRead(botaoDois))
+        {
+            if (indexMenu = 0)
+            {
+                telaEnvio();
+            }
+            else
+            {
+                telaListaMensagem();
+            }
+        }
+    }
+
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
+        if (digitalRead(botaoTres))
+        {
+            indexMenu = 0;
+            idTela--;
+        }
+    }
+}
+void telaEnvio()
+{
+    escreveMorse();
+
+    confirmaEnvio();
+
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
+        if (digitalRead(botaoTres))
+        {
+            msgMorse, mensagemTraduzida, msgTemporaria = "";
+            indexMenu = 0;
+            idTela--;
+        }
+    }
+}
+void telaListaMensagem()
+{
+    if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
+    {
+        pressBotaoUm = !pressBotaoUm;
+        if (digitalRead(botaoUm) && indexMenu != 0)
+        {
+            indexMenu--;
+        }
+    }
+
+    if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
+    {
+        pressBotaoQuatro = !pressBotaoQuatro;
+        if (digitalRead(botaoQuatro))
+        {
+            indexMenu++;
+        }
+    }
+
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
+        if (digitalRead(botaoTres))
+        {
+            indexMenu = 0;
+            idTela = 1;
+        }
+    }
+}
+void telaSenha()
+{
+    if (pressBotaoTres != digitalRead(botaoTres) && digitalRead(botaoTres))
+    {
+        idTela--;
+    }
+}
+void telaMensagem()
+{
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
+        if (digitalRead(botaoTres))
+        {
+            idTela = 3;
+        }
+    }
 }
 
 String separaFraseMorse() // remove e retorna uma "palavra-morse" duma mensagem maior
@@ -93,7 +274,7 @@ String separaFraseMorse() // remove e retorna uma "palavra-morse" duma mensagem 
 
 void limpaMensagemMorse() // remove espaços e/ou barra no final da var msgMorse
 {
-    int const indexUltimoChar = msgMorse.length - 1;
+    int const indexUltimoChar = msgMorse.length() - 1;
     int const indexUltimoEspaco = msgMorse.lastIndexOf(" ");
     int const indexUltimaBarra = msgMorse.lastIndexOf("/");
     if (indexUltimoEspaco == indexUltimoChar || indexUltimaBarra == indexUltimoEspaco)
@@ -104,7 +285,7 @@ void limpaMensagemMorse() // remove espaços e/ou barra no final da var msgMorse
 
 void escreveMorse() // chamada quando inicia-se a escrita de uma mensagem morse
 {
-    if (digitalRead(botaoMorse))
+    if (digitalRead(botaoUm))
     {
         tone(portaBuzzer, 294);
     }
@@ -112,8 +293,8 @@ void escreveMorse() // chamada quando inicia-se a escrita de uma mensagem morse
     {
         noTone(portaBuzzer);
     }
-    
-    if (pressBotaoMorse != digitalRead(botaoMorse)) // detecta mudanças do estado do botao (foi pressionado ou não)
+
+    if (pressBotaoUm != digitalRead(botaoUm)) // detecta mudanças do estado do botao (foi pressionado ou não)
     {
         if (comecoPress != 0) // botao foi clicado ao menos uma vez *antes*
         {
@@ -124,18 +305,18 @@ void escreveMorse() // chamada quando inicia-se a escrita de uma mensagem morse
         {
             mandandoMsg = true;
         }
-        pressBotaoMorse = !pressBotaoMorse;
+        pressBotaoUm = !pressBotaoUm;
         comecoPress = millis();
     }
 }
 
 void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em morse
 {
-    if (pressBotaoEnvio != digitalRead(botaoEnvio))
+    if (pressBotaoDois != digitalRead(botaoDois))
     {
-        pressBotaoEnvio = !pressBotaoEnvio;
+        pressBotaoDois = !pressBotaoDois;
 
-        if (digitalRead(botaoEnvio))
+        if (digitalRead(botaoDois))
         {
             limpaMensagemMorse();
             msgTemporaria = msgMorse;
@@ -153,7 +334,7 @@ void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em m
 
 String bitPraMorse() // converte cliques de botão em caracteres morse (retorna)
 {
-    if (pressBotaoMorse) // pulsos ativos ( '.' e '-' )
+    if (pressBotaoUm) // pulsos ativos ( '.' e '-' )
     {
         if (tempoPress < 40) // impede problemas de contato com botões de """boa qualidade"""
         {
