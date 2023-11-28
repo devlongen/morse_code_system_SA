@@ -236,5 +236,32 @@
         "out": "char",
         "addchar": "",
         "responsetimeout": "10000"
+    },
+    [
+    {
+        "id": "5585fdac9109ca45",
+        "type": "chats-in",
+        "z": "c8b8c121355fde8c",
+        "name": "WhatsApp contato",
+        "whatsappLink": "f47ad1d4e98e8a29",
+        "whatsappLiteevent": "",
+        "whatsappWebevent": "message,message_revoke_me",
+        "x": 990,
+        "y": 400,
+        "wires": [
+            [
+                "939ed98fa7331dbd"
+            ]
+        ]
+    },
+    {
+        "id": "f47ad1d4e98e8a29",
+        "type": "whatsappLink",
+        "cName": "whatsapp-web",
+        "name": "Web",
+        "clientType": "waWebClient",
+        "onlineStatus": true,
+        "loopTime": "5"
     }
+]
 ]
