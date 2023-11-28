@@ -1,0 +1,5 @@
+Lista de bibliotecas que precisam utilizar para funcionamento do código no software node-red
+
+- node-red-node-mysql
+- node-red-node-whatsapp-link
+- node-red-node-serialport
