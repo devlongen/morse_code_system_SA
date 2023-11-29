@@ -1,3 +1,16 @@
+// TODO 1. Definir o 'indexMaxContatos' pelo número de contatos na tabela do banco de dados
+// linha 56
+// TODO 2. Enviar os dados da 'confirmaEnvio()' pro node (e consequentemente banco de dados)
+// linha 606
+// TODO 3. Definir o 'indexMaxMensagens' pelo número de mensagens (de acordo com contato)
+// linha 169
+// TODO 4.1. Exibir as mensagens dum contato a partir do 'idMensagem' no lcd
+// linha 381
+// TODO 4.2. Exibir as mensagens dum contato a partir do 'idMensagem' no buzzer e led
+// linha 388 e 397
+// TODO 5. Mostrar o nome de cada contato na tela de contatos
+// linha 88
+
 //* Bibliotecas e configurações
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
@@ -13,12 +26,14 @@ int const portaBuzzer = 7;
 
 //* Variáveis genéricas
 bool pressBotaoUm, pressBotaoDois, pressBotaoTres, pressBotaoQuatro = false; // último estado do botão (usado para detectar cliques)
-bool mandandoMsg = false;                                                    // enquanto verdairo, permite a escrita duma mensagem
 float tempoPress, comecoPress = 0;
-int idTela, idContato, indexMenu = 0;
+int idTela, idContato, idMensagem = 0;
+int indexMenu, indexMaxContatos, indexMaxMensagens = 0;
+bool lockEscrita = true; // impede que mensagem seja escrita *imediatamente* depois de entrar na tela de envio
+int indexMenuMensagem = 1;
 
 //* Variáveis de mensagem
-String msgMorse, mensagemTraduzida, msgTemporaria = "";
+String msgMorse, msgTraduzida, msgTemporaria = "";
 // intervalos para escrita e escuta para digitar e expressar mensagem respectivamente
 int const intervaloEscritaCurto = 333;
 int const intervaloEscritaLongo = 3 * intervaloEscritaCurto;
@@ -34,8 +49,11 @@ void setup()
     pinMode(INPUT, botaoQuatro);
     pinMode(OUTPUT, portaLed);
     pinMode(OUTPUT, portaBuzzer);
+
     lcd.begin(); // INICIALIZAÇÃO DO DISPLAY(LCD)
     Serial.begin(9600);
+
+    // ? código para determinar o 'indexMaxContatos'
 }
 
 void navegarTela()
@@ -64,13 +82,9 @@ void navegarTela()
     {
         telaMensagem();
     }
-    else
-    {
-        // tela de erro
-    }
 }
 
-void telaContato() // todo falta inserir lista de contato (i.e qual o index maximo)
+void telaContato()
 {
     if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
     {
@@ -84,10 +98,15 @@ void telaContato() // todo falta inserir lista de contato (i.e qual o index maxi
     if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
     {
         pressBotaoQuatro = !pressBotaoQuatro;
-        if (digitalRead(botaoQuatro))
+        if (digitalRead(botaoQuatro) && indexMenu != indexMaxContatos)
         {
             indexMenu++;
         }
+    }
+
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
     }
 
     if (pressBotaoDois != digitalRead(botaoDois)) // selecionar contato
@@ -97,17 +116,30 @@ void telaContato() // todo falta inserir lista de contato (i.e qual o index maxi
         {
             idContato = indexMenu;
             indexMenu = 0;
-            telaComandos();
+            idTela++;
         }
     }
 }
 
-void telaComandos() // todo identificar qual contato foi selecionado
+void telaComandos()
 {
+    if (indexMenu == 0)
+    {
+        lcd.println("ENVIAR MSG.   <-");
+        lcd.println("VER MENSAGENS   ");
+        // lcd.print("ENVIAR MSG.   <-VER MENSAGENS   ")
+    }
+    else
+    {
+        lcd.println("ENVIAR MSG.     ");
+        lcd.println("VER MENSAGENS <-");
+        // lcd.print("ENVIAR MSG.     VER MENSAGENS <-")
+    }
+
     if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
     {
         pressBotaoUm = !pressBotaoUm;
-        if (digitalRead(botaoUm) && indexMenu != 0)
+        if (digitalRead(botaoUm) && indexMenu == 1)
         {
             indexMenu--;
         }
@@ -116,7 +148,7 @@ void telaComandos() // todo identificar qual contato foi selecionado
     if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
     {
         pressBotaoQuatro = !pressBotaoQuatro;
-        if (digitalRead(botaoQuatro))
+        if (digitalRead(botaoQuatro) && indexMenu == 0)
         {
             indexMenu++;
         }
@@ -127,13 +159,15 @@ void telaComandos() // todo identificar qual contato foi selecionado
         pressBotaoDois = !pressBotaoDois;
         if (digitalRead(botaoDois))
         {
-            if (indexMenu = 0)
+            if (indexMenu == 0)
             {
-                telaEnvio();
+                idTela++;
             }
             else
             {
-                telaListaMensagem();
+                indexMenu = 0;
+                // ? código para determinar o 'indexMaxMensagens' através do 'idContato'
+                idTela = 3;
             }
         }
     }
@@ -148,40 +182,132 @@ void telaComandos() // todo identificar qual contato foi selecionado
         }
     }
 }
+
 void telaEnvio()
 {
-    escreveMorse();
+    lcd.println("ESCREVA SUA MSG ");
+    lcd.println("EM MORSE        ");
+    // lcd.print("ESCREVA SUA MSG EM MORSE        ");
 
-    confirmaEnvio();
+    if (!lockEscrita)
+    {
+        escreveMorse();
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois))
+    {
+        pressBotaoDois = !pressBotaoDois;
+
+        if (digitalRead(botaoDois))
+        {
+            confirmaEnvio();
+        }
+    }
 
     if (pressBotaoTres != digitalRead(botaoTres))
     {
         pressBotaoTres = !pressBotaoTres;
+
         if (digitalRead(botaoTres))
         {
-            msgMorse, mensagemTraduzida, msgTemporaria = "";
+            lockEscrita = true;
+            noTone(portaBuzzer); // validação somente
+            msgMorse = "";
             indexMenu = 0;
             idTela--;
         }
     }
+
+    if (!digitalRead(botaoUm))
+    {
+        lockEscrita = false;
+    }
 }
+
 void telaListaMensagem()
 {
+    if (indexMaxMensagens = 0)
+    {
+        lcd.println("NÃO HÁ MENSAGENS");
+        lcd.println("COM ESTE CONTATO");
+        // lcd.print("NÃO HÁ MENSAGENSCOM ESTE CONTATO");
+    }
+    else if (indexMaxMensagens = 1)
+    {
+        lcd.println("1.            <-");
+        // lcd.print("1.            <-");
+    }
+    else
+    {
+        String exibirItemMensagem(int indexMsg, bool selecionada = false)
+        {
+            String num = indexMsg;
+            int numEspaco = 13 - num.length();
+            String trechoMsg = num + ".";
+
+            for (i = 0; i < numEspaco; i++)
+            {
+                trechoMsg += " ";
+            }
+
+            if (selecionada)
+            {
+                trechoMsg += "<-";
+            }
+            else
+            {
+                trechoMsg += "  ";
+            }
+            return trechoMsg;
+        }
+        if (indexMenu == indexMenuMensagem - 1)
+        {
+            lcd.println(exibirItemMensagem(indexMenu, true));
+            lcd.println(exibirItemMensagem(indexMenuMensagem));
+            // lcd.print(exibirItemMensagem(indexMenu,true) + exibirItemMensagem(indexMenuMensagem));
+        }
+        else
+        {
+            lcd.println(exibirItemMensagem(indexMenu - 1));
+            lcd.println(exibirItemMensagem(indexMenu, true));
+            // lcd.print(exibirItemMensagem(indexMenu - 1) + exibirItemMensagem(indexMenu, true));
+        }
+    }
+
     if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
     {
         pressBotaoUm = !pressBotaoUm;
         if (digitalRead(botaoUm) && indexMenu != 0)
         {
             indexMenu--;
+            if (indexMenu == indexMenuMensagem - 2)
+            {
+                indexMenuMensagem--;
+            }
         }
     }
 
     if (pressBotaoQuatro != digitalRead(botaoQuatro)) // descer na tela
     {
         pressBotaoQuatro = !pressBotaoQuatro;
-        if (digitalRead(botaoQuatro))
+        if (digitalRead(botaoQuatro) && indexMenu != indexMaxMensagens)
         {
             indexMenu++;
+            if (indexMenu > indexMenuMensagem)
+            {
+                indexMenuMensagem++;
+            }
+        }
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois))
+    {
+        pressBotaoDois = !pressBotaoDois;
+
+        if (digitalRead(botaoDois))
+        {
+            idMensagem = indexMenu;
+            idTela++;
         }
     }
 
@@ -191,19 +317,87 @@ void telaListaMensagem()
         if (digitalRead(botaoTres))
         {
             indexMenu = 0;
-            idTela = 1;
+            idTela, indexMenuMensagem = 1;
         }
     }
 }
+
 void telaSenha()
 {
-    if (pressBotaoTres != digitalRead(botaoTres) && digitalRead(botaoTres))
+    lcd.println("ESCREVA O CÓDIGO");
+    lcd.println("DE SEGURANÇA    ");
+    // lcd.print("ESCREVA O CÓDIGODE SEGURANÇA    ");
+
+    if (!lockEscrita)
     {
-        idTela--;
+        escreveMorse();
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois))
+    {
+        pressBotaoDois = !pressBotaoDois;
+
+        if (digitalRead(botaoDois))
+        {
+            lockEscrita = true;
+            noTone(portaBuzzer); // validação somente
+            limpaMensagemMorse();
+
+            if (msgMorse == "... . -. .... .-")
+            {
+                idTela++;
+            }
+            else
+            {
+                lcd.println("CÓDIGO DE SEGU- ");
+                lcd.println("RANÇA INCORRETO ");
+                // lcd.print("CÓDIGO DE SEGU- RANÇA INCORRETO ");
+                delay(4000);
+                msgMorse = "";
+            }
+        }
+    }
+
+    if (pressBotaoTres != digitalRead(botaoTres))
+    {
+        pressBotaoTres = !pressBotaoTres;
+        if (digitalRead(botaoTres))
+        {
+            lockEscrita = true;
+            noTone(portaBuzzer); // validação somente
+            msgMorse = "";
+            idTela--;
+        }
+    }
+
+    if (!digitalRead(botaoUm))
+    {
+        lockEscrita = false;
     }
 }
+
 void telaMensagem()
 {
+    // ? código pra mostrar a msg no lcd
+
+    if (pressBotaoUm != digitalRead(botaoUm))
+    {
+        pressBotaoUm = !pressBotaoUm;
+        if (digitalRead(botaoUm))
+        {
+            // ? código pra expressar msg em morse no led
+        }
+    }
+
+    if (pressBotaoDois != digitalRead(botaoDois))
+    {
+        pressBotaoDois = !pressBotaoDois;
+        if (digitalRead(botaoDois))
+        {
+            // ? código pra expressar msg em morse no buzzer
+        }
+    }
+
     if (pressBotaoTres != digitalRead(botaoTres))
     {
         pressBotaoTres = !pressBotaoTres;
@@ -212,6 +406,95 @@ void telaMensagem()
             idTela = 3;
         }
     }
+}
+
+String destraduzirDigito(String digitoAlfanumerico)
+{
+    if (digitoAlfanumerico == "a")
+        return ".-";
+    else if (digitoAlfanumerico == "b")
+        return "-...";
+    else if (digitoAlfanumerico == "c")
+        return "-.-.";
+    else if (digitoAlfanumerico == "d")
+        return "-..";
+    else if (digitoAlfanumerico == "e")
+        return ".";
+    else if (digitoAlfanumerico == "f")
+        return "..-.";
+    else if (digitoAlfanumerico == "g")
+        return "--.";
+    else if (digitoAlfanumerico == "h")
+        return "....";
+    else if (digitoAlfanumerico == "i")
+        return "..";
+    else if (digitoAlfanumerico == "j")
+        return ".---";
+    else if (digitoAlfanumerico == "k")
+        return "-.-";
+    else if (digitoAlfanumerico == "l")
+        return ".-..";
+    else if (digitoAlfanumerico == "m")
+        return "--";
+    else if (digitoAlfanumerico == "n")
+        return "-.";
+    else if (digitoAlfanumerico == "o")
+        return "---";
+    else if (digitoAlfanumerico == "p")
+        return ".--.";
+    else if (digitoAlfanumerico == "q")
+        return "--.-";
+    else if (digitoAlfanumerico == "r")
+        return ".-.";
+    else if (digitoAlfanumerico == "s")
+        return "...";
+    else if (digitoAlfanumerico == "t")
+        return "-";
+    else if (digitoAlfanumerico == "u")
+        return "..-";
+    else if (digitoAlfanumerico == "v")
+        return "...-";
+    else if (digitoAlfanumerico == "w")
+        return ".--";
+    else if (digitoAlfanumerico == "x")
+        return "-..-";
+    else if (digitoAlfanumerico == "y")
+        return "-.--";
+    else if (digitoAlfanumerico == "z")
+        return "--..";
+    else if (digitoAlfanumerico == "0")
+        return "-----";
+    else if (digitoAlfanumerico == "1")
+        return ".----";
+    else if (digitoAlfanumerico == "2")
+        return "..---";
+    else if (digitoAlfanumerico == "3")
+        return "...--";
+    else if (digitoAlfanumerico == "4")
+        return "....-";
+    else if (digitoAlfanumerico == "5")
+        return ".....";
+    else if (digitoAlfanumerico == "6")
+        return "-....";
+    else if (digitoAlfanumerico == "7")
+        return "--...";
+    else if (digitoAlfanumerico == "8")
+        return "---..";
+    else if (digitoAlfanumerico == "9")
+        return "----.";
+}
+
+String destraduzirMensagem(String mensagem)
+{
+    String msgDestraduzida = "";
+
+    for (i = 0; i < mensagem.length(); i++)
+    {
+        String trechoMensagem = mensagem.substring(i, i + 1);
+        msgDestraduzida += destraduzirDigito(trechoMensagem);
+    }
+
+    return msgDestraduzida;
 }
 
 String separaFraseMorse() // remove e retorna uma "palavra-morse" duma mensagem maior
@@ -296,14 +579,10 @@ void escreveMorse() // chamada quando inicia-se a escrita de uma mensagem morse
 
     if (pressBotaoUm != digitalRead(botaoUm)) // detecta mudanças do estado do botao (foi pressionado ou não)
     {
-        if (comecoPress != 0) // botao foi clicado ao menos uma vez *antes*
+        if (comecoPress != 0) // botao já foi clicado ao menos uma vez *antes*
         {
             tempoPress = millis() - comecoPress; // define duração do clique
             addMorseEmTexto(bitPraMorse());
-        }
-        else // botao clicado pela primeira vez
-        {
-            mandandoMsg = true;
         }
         pressBotaoUm = !pressBotaoUm;
         comecoPress = millis();
@@ -312,23 +591,35 @@ void escreveMorse() // chamada quando inicia-se a escrita de uma mensagem morse
 
 void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em morse
 {
-    if (pressBotaoDois != digitalRead(botaoDois))
+    lockEscrita = true;
+    noTone(portaBuzzer); // validação somente
+
+    if (msgMorse != "")
     {
-        pressBotaoDois = !pressBotaoDois;
-
-        if (digitalRead(botaoDois))
+        limpaMensagemMorse();
+        msgTemporaria = msgMorse;
+        do
         {
-            limpaMensagemMorse();
-            msgTemporaria = msgMorse;
-            do
-            {
-                mensagemTraduzida += traduzPalavraMorse(separaFraseMorse());
-            } while (msgTemporaria != "");
+            msgTraduzida += traduzPalavraMorse(separaFraseMorse());
+        } while (msgTemporaria != "");
 
-            // envio para o node aqui
+        // ? código para enviar mensagem pro node e banco (não sei se o trecho abaixo funciona)
+        // Serial.print(msgTraduzida);
+        // Serial.print(idContato);
 
-            espressaMensagem(portaBuzzer, msgMorse);
-        }
+        msgMorse, msgTraduzida = "";
+
+        lcd.println("MENSAGEM ENVIA- ");
+        lcd.println("DA COM SUCESSO  ");
+        // lcd.print("MENSAGEM ENVIA- DA COM SUCESSO  ")
+        delay(4000);
+    }
+    else
+    {
+        lcd.println("MENSAGENS VAZIAS");
+        lcd.println("SÃO INVALIDAS   ");
+        // lcd.print("MENSAGENS VAZIASSÃO INVALIDAS   ");
+        delay(4000);
     }
 }
 
@@ -378,157 +669,81 @@ void addMorseEmTexto(String morseChar) // adiciona um caractere morse numa mensa
 String traduzPalavraMorse(String palavraMorse) // traduz uma "palavra-morse" pra caractere alfanumérico (argumento é a função separaFraseMorse())
 {
     if (palavraMorse == ".-")
-    {
         return "a";
-    }
     else if (palavraMorse == "-...")
-    {
         return "b";
-    }
     else if (palavraMorse == "-.-.")
-    {
         return "c";
-    }
     else if (palavraMorse == "-..")
-    {
         return "d";
-    }
     else if (palavraMorse == ".")
-    {
         return "e";
-    }
     else if (palavraMorse == "..-.")
-    {
         return "f";
-    }
     else if (palavraMorse == "--.")
-    {
         return "g";
-    }
     else if (palavraMorse == "....")
-    {
         return "h";
-    }
     else if (palavraMorse == "..")
-    {
         return "i";
-    }
     else if (palavraMorse == ".---")
-    {
         return "j";
-    }
     else if (palavraMorse == "-.-")
-    {
         return "k";
-    }
     else if (palavraMorse == ".-..")
-    {
         return "l";
-    }
     else if (palavraMorse == "--")
-    {
         return "m";
-    }
     else if (palavraMorse == "-.")
-    {
         return "n";
-    }
     else if (palavraMorse == "---")
-    {
         return "o";
-    }
     else if (palavraMorse == ".--.")
-    {
         return "p";
-    }
     else if (palavraMorse == "--.-")
-    {
         return "q";
-    }
     else if (palavraMorse == ".-.")
-    {
         return "r";
-    }
     else if (palavraMorse == "...")
-    {
         return "s";
-    }
     else if (palavraMorse == "-")
-    {
         return "t";
-    }
     else if (palavraMorse == "..-")
-    {
         return "u";
-    }
     else if (palavraMorse == "...-")
-    {
         return "v";
-    }
     else if (palavraMorse == ".--")
-    {
         return "w";
-    }
     else if (palavraMorse == "-..-")
-    {
         return "x";
-    }
     else if (palavraMorse == "-.--")
-    {
         return "y";
-    }
     else if (palavraMorse == "--..")
-    {
         return "z";
-    }
     else if (palavraMorse == ".----")
-    {
         return "1";
-    }
     else if (palavraMorse == "..---")
-    {
         return "2";
-    }
     else if (palavraMorse == "...--")
-    {
         return "3";
-    }
     else if (palavraMorse == "....-")
-    {
         return "4";
-    }
     else if (palavraMorse == ".....")
-    {
         return "5";
-    }
     else if (palavraMorse == "-....")
-    {
         return "6";
-    }
     else if (palavraMorse == "--...")
-    {
         return "7";
-    }
     else if (palavraMorse == "---..")
-    {
         return "8";
-    }
     else if (palavraMorse == "----.")
-    {
         return "9";
-    }
     else if (palavraMorse == "-----")
-    {
         return "0";
-    }
     else if (palavraMorse == "/")
-    {
         return " ";
-    }
     else
-    {
         return "?";
-    }
 }
 
 void espressaMensagem(int _porta, String _msgMorse) // expressa mensagem tanto em LED quanto buzzer (de acordo com porta)
