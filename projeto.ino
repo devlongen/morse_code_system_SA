@@ -125,15 +125,19 @@ void telaComandos()
 {
     if (indexMenu == 0)
     {
-        lcd.println("ENVIAR MSG.   <-");
-        lcd.println("VER MENSAGENS   ");
-        // lcd.print("ENVIAR MSG.   <-VER MENSAGENS   ")
+        lcd.clear();
+        // lcd.println("ENVIAR MSG.   <-");
+        // lcd.println("VER MENSAGENS   ");
+        lcd.print("ENVIAR MSG.   <-VER MENSAGENS   ");
+        delay(50);
     }
     else
     {
-        lcd.println("ENVIAR MSG.     ");
-        lcd.println("VER MENSAGENS <-");
-        // lcd.print("ENVIAR MSG.     VER MENSAGENS <-")
+        lcd.clear();
+        // lcd.println("ENVIAR MSG.     ");
+        // lcd.println("VER MENSAGENS <-");
+        lcd.print("ENVIAR MSG.     VER MENSAGENS <-");
+        delay(50);
     }
 
     if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
@@ -185,9 +189,11 @@ void telaComandos()
 
 void telaEnvio()
 {
-    lcd.println("ESCREVA SUA MSG ");
-    lcd.println("EM MORSE        ");
-    // lcd.print("ESCREVA SUA MSG EM MORSE        ");
+    lcd.clear();
+    // lcd.println("ESCREVA SUA MSG ");
+    // lcd.println("EM MORSE        ");
+    lcd.print("ESCREVA SUA MSG ");
+    lcd.print("EM MORSE        ");
 
     if (!lockEscrita)
     {
@@ -224,53 +230,54 @@ void telaEnvio()
     }
 }
 
+String exibirItemMensagem(int indexMsg, bool selecionada = false)
+{
+    String num = String(indexMsg);
+    int numEspaco = 13 - num.length();
+    String trechoMsg = num + ".";
+
+    for (int i = 0; i < numEspaco; i++)
+    {
+        trechoMsg += " ";
+    }
+
+    if (selecionada)
+    {
+        trechoMsg += "<-";
+    }
+    else
+    {
+        trechoMsg += "  ";
+    }
+    return trechoMsg;
+}
+
 void telaListaMensagem()
 {
     if (indexMaxMensagens = 0)
     {
-        lcd.println("NÃO HÁ MENSAGENS");
-        lcd.println("COM ESTE CONTATO");
-        // lcd.print("NÃO HÁ MENSAGENSCOM ESTE CONTATO");
+        // lcd.println("NÃO HÁ MENSAGENS");
+        // lcd.println("COM ESTE CONTATO");
+        lcd.print("NÃO HÁ MENSAGENSCOM ESTE CONTATO");
     }
     else if (indexMaxMensagens = 1)
     {
-        lcd.println("1.            <-");
-        // lcd.print("1.            <-");
+        // lcd.println("1.            <-");
+        lcd.print("1.            <-");
     }
     else
     {
-        String exibirItemMensagem(int indexMsg, bool selecionada = false)
-        {
-            String num = indexMsg;
-            int numEspaco = 13 - num.length();
-            String trechoMsg = num + ".";
-
-            for (i = 0; i < numEspaco; i++)
-            {
-                trechoMsg += " ";
-            }
-
-            if (selecionada)
-            {
-                trechoMsg += "<-";
-            }
-            else
-            {
-                trechoMsg += "  ";
-            }
-            return trechoMsg;
-        }
         if (indexMenu == indexMenuMensagem - 1)
         {
-            lcd.println(exibirItemMensagem(indexMenu, true));
-            lcd.println(exibirItemMensagem(indexMenuMensagem));
-            // lcd.print(exibirItemMensagem(indexMenu,true) + exibirItemMensagem(indexMenuMensagem));
+            // lcd.println(exibirItemMensagem(indexMenu, true));
+            // lcd.println(exibirItemMensagem(indexMenuMensagem));
+            lcd.print(exibirItemMensagem(indexMenu,true) + exibirItemMensagem(indexMenuMensagem));
         }
         else
         {
-            lcd.println(exibirItemMensagem(indexMenu - 1));
-            lcd.println(exibirItemMensagem(indexMenu, true));
-            // lcd.print(exibirItemMensagem(indexMenu - 1) + exibirItemMensagem(indexMenu, true));
+            // lcd.println(exibirItemMensagem(indexMenu - 1));
+            // lcd.println(exibirItemMensagem(indexMenu, true));
+            lcd.print(exibirItemMensagem(indexMenu - 1) + exibirItemMensagem(indexMenu, true));
         }
     }
 
@@ -378,14 +385,16 @@ void telaSenha()
 
 void telaMensagem()
 {
-    // ? código pra mostrar a msg no lcd
+    //String mensagem = Serial.read();
+    //String mensagemDestraduzida = destraduzirMensagem(mensagem);
+    //Serial.print(mensagem);
 
     if (pressBotaoUm != digitalRead(botaoUm))
     {
         pressBotaoUm = !pressBotaoUm;
         if (digitalRead(botaoUm))
         {
-            // ? código pra expressar msg em morse no led
+            //espressaMensagem(portaLed, mensagemDestraduzida);
         }
     }
 
@@ -394,7 +403,7 @@ void telaMensagem()
         pressBotaoDois = !pressBotaoDois;
         if (digitalRead(botaoDois))
         {
-            // ? código pra expressar msg em morse no buzzer
+            //espressaMensagem(portaBuzzer, mensagemDestraduzida);
         }
     }
 
@@ -488,7 +497,7 @@ String destraduzirMensagem(String mensagem)
 {
     String msgDestraduzida = "";
 
-    for (i = 0; i < mensagem.length(); i++)
+    for (int i = 0; i < mensagem.length(); i++)
     {
         String trechoMensagem = mensagem.substring(i, i + 1);
         msgDestraduzida += destraduzirDigito(trechoMensagem);
@@ -609,16 +618,16 @@ void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em m
 
         msgMorse, msgTraduzida = "";
 
-        lcd.println("MENSAGEM ENVIA- ");
-        lcd.println("DA COM SUCESSO  ");
-        // lcd.print("MENSAGEM ENVIA- DA COM SUCESSO  ")
+        // lcd.println("MENSAGEM ENVIA- ");
+        // lcd.println("DA COM SUCESSO  ");
+        lcd.print("MENSAGEM ENVIA- DA COM SUCESSO  ")
         delay(4000);
     }
     else
     {
-        lcd.println("MENSAGENS VAZIAS");
-        lcd.println("SÃO INVALIDAS   ");
-        // lcd.print("MENSAGENS VAZIASSÃO INVALIDAS   ");
+        // lcd.println("MENSAGENS VAZIAS");
+        // lcd.println("SÃO INVALIDAS   ");
+        lcd.print("MENSAGENS VAZIASSÃO INVALIDAS   ");
         delay(4000);
     }
 }
@@ -789,8 +798,17 @@ void espressaMensagem(int _porta, String _msgMorse) // expressa mensagem tanto e
 
 void loop()
 {
-    escreveMorse();
-    confirmaEnvio();
+    navegarTela();
+
+    Serial.println("idTela = " + String(idTela));
+    Serial.println("idContato = " + String(idContato));
+    Serial.println("idMensagem = " + String(idMensagem));
+    Serial.println("indexMenu = " + String(indexMenu));
+    Serial.println("indexMaxContatos = " + String(indexMaxContatos));
+    Serial.println("indexMaxMensagens = " + String(indexMaxMensagens));
+    Serial.println("indexMenuMensagem = " + String(indexMenuMensagem));
+    Serial.println("msgMorse = " + String(msgMorse));
+    Serial.println("msgTraduzida = " + String(msgTraduzida));
 
     // if (digitalRead(2)) {
     //   digitalWrite(3, 1);
