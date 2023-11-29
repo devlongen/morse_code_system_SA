@@ -86,6 +86,7 @@ void navegarTela()
 
 void telaContato()
 {
+    lcd.clear();
     if (pressBotaoUm != digitalRead(botaoUm)) // subir na tela
     {
         pressBotaoUm = !pressBotaoUm;
@@ -123,9 +124,9 @@ void telaContato()
 
 void telaComandos()
 {
+    lcd.clear();
     if (indexMenu == 0)
     {
-        lcd.clear();
         // lcd.println("ENVIAR MSG.   <-");
         // lcd.println("VER MENSAGENS   ");
         lcd.print("ENVIAR MSG.   <-VER MENSAGENS   ");
@@ -133,7 +134,6 @@ void telaComandos()
     }
     else
     {
-        lcd.clear();
         // lcd.println("ENVIAR MSG.     ");
         // lcd.println("VER MENSAGENS <-");
         lcd.print("ENVIAR MSG.     VER MENSAGENS <-");
@@ -254,6 +254,7 @@ String exibirItemMensagem(int indexMsg, bool selecionada = false)
 
 void telaListaMensagem()
 {
+    lcd.clear();
     if (indexMaxMensagens = 0)
     {
         // lcd.println("NÃO HÁ MENSAGENS");
@@ -271,7 +272,7 @@ void telaListaMensagem()
         {
             // lcd.println(exibirItemMensagem(indexMenu, true));
             // lcd.println(exibirItemMensagem(indexMenuMensagem));
-            lcd.print(exibirItemMensagem(indexMenu,true) + exibirItemMensagem(indexMenuMensagem));
+            lcd.print(exibirItemMensagem(indexMenu, true) + exibirItemMensagem(indexMenuMensagem));
         }
         else
         {
@@ -331,6 +332,7 @@ void telaListaMensagem()
 
 void telaSenha()
 {
+    lcd.clear();
     lcd.println("ESCREVA O CÓDIGO");
     lcd.println("DE SEGURANÇA    ");
     // lcd.print("ESCREVA O CÓDIGODE SEGURANÇA    ");
@@ -356,6 +358,7 @@ void telaSenha()
             }
             else
             {
+                lcd.clear();
                 lcd.println("CÓDIGO DE SEGU- ");
                 lcd.println("RANÇA INCORRETO ");
                 // lcd.print("CÓDIGO DE SEGU- RANÇA INCORRETO ");
@@ -385,16 +388,17 @@ void telaSenha()
 
 void telaMensagem()
 {
-    //String mensagem = Serial.read();
-    //String mensagemDestraduzida = destraduzirMensagem(mensagem);
-    //Serial.print(mensagem);
+    lcd.clear();
+    // String mensagem = Serial.read();
+    // String mensagemDestraduzida = destraduzirMensagem(mensagem);
+    // Serial.print(mensagem);
 
     if (pressBotaoUm != digitalRead(botaoUm))
     {
         pressBotaoUm = !pressBotaoUm;
         if (digitalRead(botaoUm))
         {
-            //espressaMensagem(portaLed, mensagemDestraduzida);
+            // espressaMensagem(portaLed, mensagemDestraduzida);
         }
     }
 
@@ -403,7 +407,7 @@ void telaMensagem()
         pressBotaoDois = !pressBotaoDois;
         if (digitalRead(botaoDois))
         {
-            //espressaMensagem(portaBuzzer, mensagemDestraduzida);
+            // espressaMensagem(portaBuzzer, mensagemDestraduzida);
         }
     }
 
@@ -620,7 +624,7 @@ void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em m
 
         // lcd.println("MENSAGEM ENVIA- ");
         // lcd.println("DA COM SUCESSO  ");
-        lcd.print("MENSAGEM ENVIA- DA COM SUCESSO  ")
+        lcd.print("MENSAGEM ENVIA- DA COM SUCESSO  ");
         delay(4000);
     }
     else
