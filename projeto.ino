@@ -35,7 +35,7 @@ int indexMenuMensagem = 1;
 //* Variáveis de mensagem
 String msgMorse, msgTraduzida, msgTemporaria = "";
 // intervalos para escrita e escuta para digitar e expressar mensagem respectivamente
-int const intervaloEscritaCurto = 333;
+int const intervaloEscritaCurto = 500;
 int const intervaloEscritaLongo = 3 * intervaloEscritaCurto;
 int const intervaloEscutaCurto = 250;
 int const intervaloEscutaLongo = 3 * intervaloEscutaCurto;
@@ -220,6 +220,7 @@ void telaEnvio()
             noTone(portaBuzzer); // validação somente
             msgMorse = "";
             indexMenu = 0;
+            comecoPress = 0;
             idTela--;
         }
     }
@@ -325,7 +326,8 @@ void telaListaMensagem()
         if (digitalRead(botaoTres))
         {
             indexMenu = 0;
-            idTela, indexMenuMensagem = 1;
+            idTela = 1;
+            indexMenuMensagem = 1;
         }
     }
 }
@@ -333,7 +335,7 @@ void telaListaMensagem()
 void telaSenha()
 {
     lcd.clear();
-    lcd.println("ESCREVA O CÓDIGO");
+    lcd.println("ESCREVA O CODIGO");
     lcd.println("DE SEGURANÇA    ");
     // lcd.print("ESCREVA O CÓDIGODE SEGURANÇA    ");
 
@@ -376,6 +378,7 @@ void telaSenha()
             lockEscrita = true;
             noTone(portaBuzzer); // validação somente
             msgMorse = "";
+            comecoPress = 0;
             idTela--;
         }
     }
@@ -617,10 +620,12 @@ void confirmaEnvio() // sempre sendo chamada, esta envia a mensagem escrita em m
         } while (msgTemporaria != "");
 
         // ? código para enviar mensagem pro node e banco (não sei se o trecho abaixo funciona)
-        // Serial.print(msgTraduzida);
-        // Serial.print(idContato);
+        Serial.println(msgTraduzida);
+        Serial.println(idContato);
 
-        msgMorse, msgTraduzida = "";
+        comecoPress = 0;
+        msgMorse = "";
+        msgTraduzida = "";
 
         // lcd.println("MENSAGEM ENVIA- ");
         // lcd.println("DA COM SUCESSO  ");
@@ -804,15 +809,15 @@ void loop()
 {
     navegarTela();
 
-    Serial.println("idTela = " + String(idTela));
-    Serial.println("idContato = " + String(idContato));
-    Serial.println("idMensagem = " + String(idMensagem));
-    Serial.println("indexMenu = " + String(indexMenu));
-    Serial.println("indexMaxContatos = " + String(indexMaxContatos));
-    Serial.println("indexMaxMensagens = " + String(indexMaxMensagens));
-    Serial.println("indexMenuMensagem = " + String(indexMenuMensagem));
+    // Serial.println("idTela = " + String(idTela));
+    // Serial.println("idContato = " + String(idContato));
+    // Serial.println("idMensagem = " + String(idMensagem));
+    // Serial.println("indexMenu = " + String(indexMenu));
+    // Serial.println("indexMaxContatos = " + String(indexMaxContatos));
+    // Serial.println("indexMaxMensagens = " + String(indexMaxMensagens));
+    // Serial.println("indexMenuMensagem = " + String(indexMenuMensagem));
     Serial.println("msgMorse = " + String(msgMorse));
-    Serial.println("msgTraduzida = " + String(msgTraduzida));
+    // Serial.println("msgTraduzida = " + String(msgTraduzida));
 
     // if (digitalRead(2)) {
     //   digitalWrite(3, 1);
